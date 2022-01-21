@@ -20,20 +20,6 @@ struct Voxel_coordinate//при условии что грань вокселя 
     double x, y, z;
 };
 
-bool CHECK_CHECK(std::vector<Voxel_coordinate>& vec, std::vector<Voxel_coordinate>& tak) {
-    for (int i = 0; i < vec.size(); i++)
-    {
-        for (int j = 0; j < tak.size(); j++)
-        {
-            if ((vec[i].x == tak[j].x) && (vec[i].y == tak[j].y) && (vec[i].z == tak[j].z))
-            {
-                break;
-                return false;
-            }
-        }
-    }
-    return true;
-};
 
 float get_random()
 {
@@ -114,9 +100,40 @@ void Turning_particle(bool orient_a, std::vector<Voxel_coordinate>& vec) {
     }
 };
 
+
+void CHECK_CHECK(std::vector<Voxel_coordinate>& vec, std::vector<Voxel_coordinate>& tak, bool orient_a) {
+    bool check = true;
+    for (int i = 0; i < vec.size(); i++)
+    {
+        
+        if (check)
+        {
+            for (int j = 0; j < tak.size(); j++)// проверяем координату на совпадение с каждой координатой занятых вокселей
+            {
+                if ((vec[i].x == tak[j].x) && (vec[i].y == tak[j].y) && (vec[i].z == tak[j].z))
+                {
+                    check = false;
+                }
+            }
+                    
+        }
+        
+    }
+
+    if (check)
+    {
+     //some lind of return????    
+    }
+    else
+    {
+        Turning_particle(orient_a, vec);
+        CHECK_CHECK(vec, tak, orient_a);
+    }
+    
+};
+
 int main()
 {
-
     srand(time(0));//(x - x0) ^ 2 / a ^ 2 + (y - y0) ^ 2 / b ^ 2 + (z - z0) ^ 2 / c ^ 2 = 1
 //  omp_set_num_threads(3);
     double a = 1;
@@ -162,21 +179,25 @@ int main()
         {
             particles.push_back(coord);
             Taken_vox_filling(coord, taken_voxels, m_size, _size, a, b);//Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec, double MIN_size, double MAX_size, double A_C, double B
+            i++;
         }
         else
         {
             vec_tmp.clear();
             Taken_vox_filling(coord, vec_tmp, m_size, _size, a, b);
-            check_point = CHECK_CHECK(vec_tmp, taken_voxels);//проверяем на пересечения
-            if (check_point) {//если их нет (true) заполняем
-                particles.push_back(coord);
-                Taken_vox_filling(coord, taken_voxels, m_size, _size, a, b);
-            }
-            else//если есть (false) поворот
-            {
-                Turning_particle(orientation, vec_tmp);//придумать какую то красивую проверку
-            }
+            CHECK_CHECK(vec_tmp, taken_voxels, orientation);//проверяем на пересечения
+            particles.push_back(coord);
+            Taken_vox_filling(coord, taken_voxels, m_size, _size, a, b);
+            i++;
         }
+    }
+
+    for (int j = 0; j < particles.size(); j++)
+    {
+        cout << "x :\t" << particles[i].x;
+        cout << "y :\t" << particles[i].y;
+        cout << "z :\t" << particles[i].z;
+    }
 
     return 0;
 }
