@@ -122,7 +122,7 @@ void CHECK_CHECK(std::vector<Voxel_coordinate>& vec, std::vector<Voxel_coordinat
 
     if (check)
     {
-     //some lind of return????    
+     //some kind of return????    
     }
     else
     {
