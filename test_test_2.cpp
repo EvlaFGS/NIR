@@ -24,7 +24,7 @@ struct Voxel_coordinate//при условии что грань вокселя 
 float get_random()
 {
     static std::default_random_engine e;
-    static std::uniform_real_distribution<> dis(0, 1); // rage 0 - 1
+    static std::uniform_real_distribution<> dis(0, 1); // range 0 - 1
     return dis(e);
 }
 
@@ -35,10 +35,10 @@ void Taken_vox_filling(Voxel_coordinate particle, std::vector<Voxel_coordinate>&
 
     Voxel_coordinate part_temp;
 
-    double accur = 0.5;
+    double accur = 0.5; ///???
 
 #pragma omp parallel for
-    for (x = MIN_size; x < MAX_size; x += 1) {
+    for (x = MIN_size; x < MAX_size; x += 1) { ///??? why 1???
 #pragma omp parallel for
         for (y = MIN_size; y < MAX_size; y += 1) {
 #pragma omp parallel for
@@ -169,10 +169,8 @@ int main()
 
         if (i == 0)
         {
-            particles.push_back(coord);
             Taken_vox_filling(coord, taken_voxels, m_size, _size, a, b);//Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec, double MIN_size, double MAX_size, double A_C, double B
             Turning_particle(orientation, taken_voxels);
-            i++;
         }
         else
         {
@@ -184,9 +182,9 @@ int main()
                 tmp_bool = CHECK_CHECK(vec_tmp, taken_voxels);
             } while (tmp_bool = false);
             //проверяем на пересечения
-            particles.push_back(coord);
-            i++;
         }
+        particles.push_back(coord);
+        i++;
     }
 
     for (int j = 0; j < particles.size(); j++)
