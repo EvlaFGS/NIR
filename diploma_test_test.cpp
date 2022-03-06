@@ -17,7 +17,7 @@ double B;//b - big semi-axes
 double R;// радиус цилиндра
 double H;//выссота
 const double PI = 3.141592653589793;
-const double VOX_EDGE = 0.05;
+const double VOX_EDGE = 0.5;
 
 struct EllipseInitConditions {
     double cube_volume;
@@ -35,7 +35,7 @@ EllipseInitConditions ESetConditions() {
     cin >> tmp_conditions.particle_amount;
     cout << "Enter percentage without '%' (what part of cube's volume should be filled) : " << endl;
     cin >> tmp_conditions.percentage;
-    tmp_conditions.ellipse_volume = (4 / 3) * PI * A_C * A_C * B;
+    tmp_conditions.ellipse_volume = (4.0 / 3.0) * PI * A_C * A_C * B;
     tmp_conditions.cube_volume = 100 * tmp_conditions.particle_amount * tmp_conditions.ellipse_volume / tmp_conditions.percentage;
     cout << "Cube volume :\t " << tmp_conditions.cube_volume << endl;
     tmp_conditions.cube_edge = cbrt(tmp_conditions.cube_volume);
@@ -196,7 +196,7 @@ public:
 
     bool CHECK_CHECK(std::vector<Voxel_coordinate>& vec, std::vector<Voxel_coordinate>& tak) {
         bool check(true);
-        double tolerance = VOX_EDGE * sqrt(2) / 2;
+        double tolerance = VOX_EDGE * 1.5;
         for (int i = 0; i < vec.size(); i++)
         {
 
@@ -389,7 +389,7 @@ public:
 
     bool CHECK_CHECK(std::vector<Voxel_coordinate>& vec, std::vector<Voxel_coordinate>& tak) {
         bool check(true);
-        double tolerance = 0.0005;
+        double tolerance = VOX_EDGE * 1.5;
         for (int i = 0; i < vec.size(); i++)
         {
 
@@ -437,7 +437,7 @@ public:
             {
                 particles.push_back(coord);
                 Taken_vox_filling(coord, taken_voxels);//Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec, double MIN_size, double MAX_size, double A_C, double B
-                Turning_particle(conditions.orientation, taken_voxels);
+                //Turning_particle(conditions.orientation, taken_voxels);
                 i++;
             }
             else
@@ -446,7 +446,7 @@ public:
                 do
                 {
                     Taken_vox_filling(coord, vec_tmp);
-                    Turning_particle(conditions.orientation, vec_tmp);
+                    //Turning_particle(conditions.orientation, vec_tmp);
                     tmp_bool = CHECK_CHECK(vec_tmp, taken_voxels);
                 } while (tmp_bool = false);
                 //проверяем на пересечения
