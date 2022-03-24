@@ -300,7 +300,7 @@ public:
                     //Turning_particle(conditions.orientation, vec_tmp);
                     tmp_bool = CHECK_CHECK(vec_tmp, taken_voxels);
 	            printVoxels(vec_tmp,tmp_bool,"voxels.txt");
-                } while (tmp_bool = false);
+                } while (tmp_bool == false);
                 //проверяем на пересечения
 
                 particles.push_back(coord);
@@ -512,7 +512,7 @@ public:
                     Taken_vox_filling(coord, vec_tmp);
                     //Turning_particle(conditions.orientation, vec_tmp);
                     tmp_bool = CHECK_CHECK(vec_tmp, taken_voxels);
-                } while (tmp_bool = false);
+                } while (tmp_bool == false);
                 //проверяем на пересечения
 
                 particles.push_back(coord);
