@@ -95,7 +95,8 @@ struct Voxel_coordinate//при условии что грань вокселя 
 
 void printVoxels(vector<Voxel_coordinate>& vec, bool is, string filename) /*prints voxel coords and true/false into file*/
 {
-	ofstream outf(filename.c_str());
+	ofstream outf;
+	outf.open(filename.c_str(), std::ios_base::app);
 	if (!outf)
         {
             // то выводим сообщение об ошибке и выполняем функцию exit()
@@ -103,7 +104,6 @@ void printVoxels(vector<Voxel_coordinate>& vec, bool is, string filename) /*prin
             exit(1);
         }
 
-	outf.open(name, std::ios_base::app);
 	outf<<"Particle "<<(is?"YES":"NO")<<endl;
         for (int i = 0; i < vec.size(); i++)
         {
