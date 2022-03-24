@@ -223,7 +223,7 @@ cout<<"x= "<<x<<" y= "<<y<<" z= "<<z<<endl;
 
     bool CHECK_CHECK(std::vector<Voxel_coordinate>& vec, std::vector<Voxel_coordinate>& tak) {
         bool check(true);
-        double tolerance = VOX_EDGE * 1.5;
+        double tolerance = VOX_EDGE * 0.5;
         for (int i = 0; i < vec.size(); i++)
         {
 
@@ -429,7 +429,7 @@ public:
 
     bool CHECK_CHECK(std::vector<Voxel_coordinate>& vec, std::vector<Voxel_coordinate>& tak) {
         bool check(true);
-        double tolerance = VOX_EDGE * 1.5;
+        double tolerance = VOX_EDGE * 0.5;
         for (int i = 0; i < vec.size(); i++)
         {
 
