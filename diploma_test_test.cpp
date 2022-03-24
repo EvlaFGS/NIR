@@ -129,7 +129,7 @@ public:
 
         Voxel_coordinate part_temp;
 
-        double accur = 0.0005;
+        double accur = VOX_EDGE/2.0;
 
 	int count = ceil((MAX_size-MIN_size)/VOX_EDGE);
 	double MAX_corrected = MIN_size + count*VOX_EDGE;
@@ -147,7 +147,7 @@ public:
 	int voxel_min_z = floor((min_z - MIN_size)/VOX_EDGE);
 	int voxel_max_z = ceil((max_z - MIN_size)/VOX_EDGE);
 
-	#pragma omp parallel for collapse(3)
+	#pragma omp parallel for collapse(3) private(x,y,z,part_temp)
         for (int i = voxel_min_x; i < voxel_max_x; i++) {
             for (int j = voxel_min_y; j < voxel_max_y; j++) {
                 for (int k = voxel_min_z; k < voxel_max_z; k++) {
@@ -158,7 +158,9 @@ public:
                         part_temp.x = x;
                         part_temp.y = y;
                         part_temp.z = z;
-                        vec.push_back(part_temp);
+cout<<"x= "<<x<<" y= "<<y<<" z= "<<z<<endl;
+			#pragma omp critical
+                            vec.push_back(part_temp);
                     }
                 }
             }
@@ -232,6 +234,7 @@ public:
                     if ((fabs(vec[i].x - tak[j].x) <= tolerance) && (fabs(vec[i].y - tak[j].y) <= tolerance) && (fabs(vec[i].z - tak[j].z) <= tolerance))
                     {
                         check = false;
+			break; //speed up
                     }
                 }
 
@@ -354,7 +357,7 @@ public:
 	int voxel_min_z = floor((min_z - MIN_size)/VOX_EDGE);
 	int voxel_max_z = ceil((max_z - MIN_size)/VOX_EDGE);
 
-	#pragma omp parallel for collapse(3)
+	#pragma omp parallel for collapse(3) private(x,y,z,part_temp)
         for (int i = voxel_min_x; i < voxel_max_x; i++) {
             for (int j = voxel_min_y; j < voxel_max_y; j++) {
                 for (int k = voxel_min_z; k < voxel_max_z; k++) {
@@ -365,7 +368,8 @@ public:
                         part_temp.x = x;
                         part_temp.y = y;
                         part_temp.z = z;
-                        vec.push_back(part_temp);
+			#pragma omp critical
+                            vec.push_back(part_temp);
                     }
                 }
             }
