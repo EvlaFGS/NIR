@@ -96,9 +96,10 @@ struct Voxel_coordinate//при условии что грань вокселя 
 void printVoxels(vector<Voxel_coordinate>& vec, bool is, string filename) /*prints voxel coords and true/false into file*/
 {
 	ofstream outf(filename.c_str());
+	if (!outf)
         {
             // то выводим сообщение об ошибке и выполняем функцию exit()
-            cerr << "Uh oh, Coord.txt could not be opened for writing!" << endl;
+            cerr << "Uh oh, "<<filename.c_str()<<" could not be opened for writing!" << endl;
             exit(1);
         }
 
