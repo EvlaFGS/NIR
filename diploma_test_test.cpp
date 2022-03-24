@@ -108,8 +108,8 @@ public:
 
     Cube_with_ellipses(EllipseInitConditions conditions) {
         this->init_conditions = conditions;
-        this->MAX_size = conditions.cube_edge / 2;
-        this->MIN_size = -conditions.cube_edge / 2;
+        this->MAX_size = conditions.cube_edge / 2.0;
+        this->MIN_size = -conditions.cube_edge / 2.0;
     }
 
     void Taken_vox_filling(Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec) {
@@ -122,11 +122,10 @@ public:
 
         double accur = 0.0005;
 
-#pragma omp parallel for
+//int count = (MAX_size-MIN_size)/VOX_EDGE;
+#pragma omp parallel for collapse(3)
         for (x = MIN_size; x < MAX_size; x += VOX_EDGE) {
-#pragma omp parallel for
             for (y = MIN_size; y < MAX_size; y += VOX_EDGE) {
-#pragma omp parallel for
                 for (z = MIN_size; z < MAX_size; z += VOX_EDGE) {
                     if (fabs(((pow((x - particle.x), 2) / pow(A_C, 2)) + (pow((y - particle.y), 2) / pow(B, 2)) + (pow((z - particle.z), 2) / pow(A_C, 2))) - 1) < accur) {
                         part_temp.x = x;
@@ -216,10 +215,7 @@ public:
         return(check);
     };
 
-    void generation(EllipseInitConditions conditions) {
-
-        MAX_size = conditions.cube_edge / 2;//при условии что центр координатного объема - в центре куба
-        MIN_size = -conditions.cube_edge / 2;
+    void generation() {
 
         Voxel_coordinate coord;
 
@@ -232,7 +228,7 @@ public:
         int i = 0;
         bool tmp_bool;
 
-        while (i < conditions.particle_amount) {
+        while (i < init_conditions.particle_amount) {
 
             coord.x = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;//генерация точки центра эллипсоида
             coord.y = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;
@@ -302,8 +298,8 @@ public:
 
     Cube_with_cylinders(CylinderInitConditions conditions) {
         this->init_conditions = conditions;
-        this->MAX_size = conditions.cube_edge / 2;
-        this->MIN_size = -conditions.cube_edge / 2;
+        this->MAX_size = conditions.cube_edge / 2.0;
+        this->MIN_size = -conditions.cube_edge / 2.0;
     }
 
     void Taken_vox_filling(Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec) {
@@ -314,13 +310,11 @@ public:
 
         Voxel_coordinate part_temp;
 
-        double accur = VOX_EDGE / 2;
+        double accur = VOX_EDGE / 2.0;
 
-#pragma omp parallel for
+#pragma omp parallel for collapse(3)
         for (x = MIN_size; x < MAX_size; x += VOX_EDGE) {
-#pragma omp parallel for
             for (y = MIN_size; y < MAX_size; y += VOX_EDGE) {
-#pragma omp parallel for
                 for (z = MIN_size; z < MAX_size; z += VOX_EDGE) {
                     if ((fabs(((pow((x - particle.x), 2) / pow(R, 2)) + (pow((y - particle.y), 2) / pow(R, 2))) - 1) < accur) && (((-H / 2) - accur <= particle.z) || (particle.z <= (H / 2) + accur))) {
                         part_temp.x = x;
@@ -409,10 +403,7 @@ public:
         return(check);
     };
 
-    void generation(CylinderInitConditions conditions) {
-
-        MAX_size = conditions.cube_edge / 2;//при условии что центр координатного объема - в центре куба
-        MIN_size = -conditions.cube_edge / 2;
+    void generation() {
 
         Voxel_coordinate coord;
 
@@ -427,7 +418,7 @@ public:
         int i = 0;
         bool tmp_bool;
 
-        while (i < conditions.particle_amount) {
+        while (i < init_conditions.particle_amount) {
 
             coord.x = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;//генерация точки центра эллипсоида
             coord.y = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;
@@ -501,7 +492,7 @@ int main() {
         EllipseInitConditions conditions = ESetConditions();
 
         Cube_with_ellipses* test_cube = new Cube_with_ellipses(conditions);
-        test_cube->generation(conditions);
+        test_cube->generation();
     }
     else if (type == "c") {
         double hight;
@@ -516,7 +507,7 @@ int main() {
         CylinderInitConditions conditions = CSetConditions();
 
         Cube_with_cylinders* test_cube = new Cube_with_cylinders(conditions);
-        test_cube->generation(conditions);
+        test_cube->generation();
     }
     else
     {
