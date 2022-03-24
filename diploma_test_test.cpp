@@ -181,7 +181,6 @@ public:
                         part_temp.x = x;
                         part_temp.y = y;
                         part_temp.z = z;
-cout<<"x= "<<x<<" y= "<<y<<" z= "<<z<<endl;
 			#pragma omp critical
                             vec.push_back(part_temp);
                     }
@@ -303,7 +302,11 @@ cout<<"x= "<<x<<" y= "<<y<<" z= "<<z<<endl;
 	            printVoxels(vec_tmp,tmp_bool,"voxels.txt");
                 } while (tmp_bool = false);
                 //проверяем на пересечения
+
                 particles.push_back(coord);
+		//mark new voxels as taken
+		taken_voxels.reserve(taken_voxels.size()+vec_tmp.size());
+		taken_voxels.insert(taken_voxels.end(), vec_tmp.begin(), vec_tmp.end());
                 i++;
             }
         }
@@ -511,7 +514,11 @@ public:
                     tmp_bool = CHECK_CHECK(vec_tmp, taken_voxels);
                 } while (tmp_bool = false);
                 //проверяем на пересечения
+
                 particles.push_back(coord);
+		//mark new voxels as taken
+		taken_voxels.reserve(taken_voxels.size()+vec_tmp.size());
+		taken_voxels.insert(taken_voxels.end(), vec_tmp.begin(), vec_tmp.end());
                 i++;
             }
         }
