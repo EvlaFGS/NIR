@@ -227,8 +227,6 @@ cout<<"x= "<<x<<" y= "<<y<<" z= "<<z<<endl;
         for (int i = 0; i < vec.size(); i++)
         {
 
-            if (check)
-            {
                 for (int j = 0; j < tak.size(); j++)// проверяем координату на совпадение с каждой координатой занятых вокселей
                 {
                     if ((fabs(vec[i].x - tak[j].x) <= tolerance) && (fabs(vec[i].y - tak[j].y) <= tolerance) && (fabs(vec[i].z - tak[j].z) <= tolerance))
@@ -237,8 +235,8 @@ cout<<"x= "<<x<<" y= "<<y<<" z= "<<z<<endl;
 			break; //speed up
                     }
                 }
-
-            }
+	if (!check)
+	    break;
 
         }
         return(check);
@@ -435,18 +433,17 @@ public:
         for (int i = 0; i < vec.size(); i++)
         {
 
-            if (check)
-            {
                 for (int j = 0; j < tak.size(); j++)// проверяем координату на совпадение с каждой координатой занятых вокселей
                 {
                     if ((fabs(vec[i].x - tak[j].x) <= tolerance) && (fabs(vec[i].y - tak[j].y) <= tolerance) && (fabs(vec[i].z - tak[j].z) <= tolerance))
                     {
                         check = false;
+			break;
                     }
                 }
 
-            }
-
+        if (!check)
+            break;
         }
         return(check);
     };
