@@ -93,6 +93,15 @@ struct Voxel_coordinate//при условии что грань вокселя 
     double x, y, z;
 };
 
+double account_for_periodic(double coord, double min, double max)
+{
+    if (coord<min)
+	return max+(coord-min);
+    if (coord>max)
+	return min+(max-coord);
+    return coord;
+}
+
 class Cube_with_ellipses {
 private:
     EllipseInitConditions init_conditions;
@@ -122,17 +131,34 @@ public:
 
         double accur = 0.0005;
 
-//int count = (MAX_size-MIN_size)/VOX_EDGE;
-#pragma omp parallel for collapse(3)
-        for (x = MIN_size; x < MAX_size; x += VOX_EDGE) {
-            for (y = MIN_size; y < MAX_size; y += VOX_EDGE) {
-                for (z = MIN_size; z < MAX_size; z += VOX_EDGE) {
-                    if (fabs(((pow((x - particle.x), 2) / pow(A_C, 2)) + (pow((y - particle.y), 2) / pow(B, 2)) + (pow((z - particle.z), 2) / pow(A_C, 2))) - 1) < accur) {
+	int count = ceil((MAX_size-MIN_size)/VOX_EDGE);
+	double MAX_corrected = MIN_size + count*VOX_EDGE;
+	double large_ax=A_C>B?A_C:B;
+	double min_x = particle.x - large_ax;
+	double max_x = particle.x + large_ax;
+	double min_y = particle.y - large_ax;
+	double max_y = particle.y + large_ax;
+	double min_z = particle.z - large_ax;
+	double max_z = particle.z + large_ax;
+	int voxel_min_x = floor((min_x - MIN_size)/VOX_EDGE);
+	int voxel_max_x = ceil((max_x - MIN_size)/VOX_EDGE);
+	int voxel_min_y = floor((min_y - MIN_size)/VOX_EDGE);
+	int voxel_max_y = ceil((max_y - MIN_size)/VOX_EDGE);
+	int voxel_min_z = floor((min_z - MIN_size)/VOX_EDGE);
+	int voxel_max_z = ceil((max_z - MIN_size)/VOX_EDGE);
+
+	#pragma omp parallel for collapse(3)
+        for (int i = voxel_min_x; i < voxel_max_x; i++) {
+            for (int j = voxel_min_y; j < voxel_max_y; j++) {
+                for (int k = voxel_min_z; k < voxel_max_z; k++) {
+	     	    x = account_for_periodic(i*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
+		    y = account_for_periodic(j*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
+		    z = account_for_periodic(k*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
+		     if (fabs(((pow((x - particle.x), 2) / pow(A_C, 2)) + (pow((y - particle.y), 2) / pow(B, 2)) + (pow((z - particle.z), 2) / pow(A_C, 2))) - 1) < accur) {
                         part_temp.x = x;
                         part_temp.y = y;
                         part_temp.z = z;
                         vec.push_back(part_temp);
-
                     }
                 }
             }
@@ -312,16 +338,34 @@ public:
 
         double accur = VOX_EDGE / 2.0;
 
-#pragma omp parallel for collapse(3)
-        for (x = MIN_size; x < MAX_size; x += VOX_EDGE) {
-            for (y = MIN_size; y < MAX_size; y += VOX_EDGE) {
-                for (z = MIN_size; z < MAX_size; z += VOX_EDGE) {
+	int count = ceil((MAX_size-MIN_size)/VOX_EDGE);
+	double MAX_corrected = MIN_size + count*VOX_EDGE;
+	double large_ax=A_C>B?A_C:B;
+	double min_x = particle.x - large_ax;
+	double max_x = particle.x + large_ax;
+	double min_y = particle.y - large_ax;
+	double max_y = particle.y + large_ax;
+	double min_z = particle.z - large_ax;
+	double max_z = particle.z + large_ax;
+	int voxel_min_x = floor((min_x - MIN_size)/VOX_EDGE);
+	int voxel_max_x = ceil((max_x - MIN_size)/VOX_EDGE);
+	int voxel_min_y = floor((min_y - MIN_size)/VOX_EDGE);
+	int voxel_max_y = ceil((max_y - MIN_size)/VOX_EDGE);
+	int voxel_min_z = floor((min_z - MIN_size)/VOX_EDGE);
+	int voxel_max_z = ceil((max_z - MIN_size)/VOX_EDGE);
+
+	#pragma omp parallel for collapse(3)
+        for (int i = voxel_min_x; i < voxel_max_x; i++) {
+            for (int j = voxel_min_y; j < voxel_max_y; j++) {
+                for (int k = voxel_min_z; k < voxel_max_z; k++) {
+	            x = account_for_periodic(i*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
+		    y = account_for_periodic(j*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
+		    z = account_for_periodic(k*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
                     if ((fabs(((pow((x - particle.x), 2) / pow(R, 2)) + (pow((y - particle.y), 2) / pow(R, 2))) - 1) < accur) && (((-H / 2) - accur <= particle.z) || (particle.z <= (H / 2) + accur))) {
                         part_temp.x = x;
                         part_temp.y = y;
                         part_temp.z = z;
                         vec.push_back(part_temp);
-
                     }
                 }
             }
