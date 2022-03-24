@@ -340,7 +340,7 @@ public:
 
 	int count = ceil((MAX_size-MIN_size)/VOX_EDGE);
 	double MAX_corrected = MIN_size + count*VOX_EDGE;
-	double large_ax=A_C>B?A_C:B;
+	double large_ax=sqrt(H*H/4.0 + R*R);
 	double min_x = particle.x - large_ax;
 	double max_x = particle.x + large_ax;
 	double min_y = particle.y - large_ax;
