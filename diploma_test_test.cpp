@@ -103,6 +103,7 @@ void printVoxels(vector<Voxel_coordinate>& vec, bool is, string filename) /*prin
             exit(1);
         }
 
+	outf.open(name, std::ios_base::app);
 	outf<<"Particle "<<(is?"YES":"NO")<<endl;
         for (int i = 0; i < vec.size(); i++)
         {
