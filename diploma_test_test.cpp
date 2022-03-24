@@ -93,6 +93,27 @@ struct Voxel_coordinate//при условии что грань вокселя 
     double x, y, z;
 };
 
+void printVoxels(vector<Voxel_coordinate>& vec, bool is, string filename) /*prints voxel coords and true/false into file*/
+{
+	ofstream outf(filename.c_str());
+        {
+            // то выводим сообщение об ошибке и выполняем функцию exit()
+            cerr << "Uh oh, Coord.txt could not be opened for writing!" << endl;
+            exit(1);
+        }
+
+	outf<<"Particle "<<(is?"YES":"NO")<<endl;
+        for (int i = 0; i < vec.size(); i++)
+        {
+            outf << vec[i].x << "\t";
+            outf << vec[i].y << "\t";
+            outf << vec[i].z << endl;
+        }
+
+        outf.close();
+
+}
+
 double account_for_periodic(double coord, double min, double max)
 {
     if (coord<min)
@@ -267,6 +288,7 @@ cout<<"x= "<<x<<" y= "<<y<<" z= "<<z<<endl;
                 Taken_vox_filling(coord, taken_voxels);//Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec, double MIN_size, double MAX_size, double A_C, double B
                 //Turning_particle(conditions.orientation, taken_voxels);
                 i++;
+		printVoxels(taken_voxels,true,"voxels.txt");
             }
             else
             {
@@ -276,6 +298,7 @@ cout<<"x= "<<x<<" y= "<<y<<" z= "<<z<<endl;
                     Taken_vox_filling(coord, vec_tmp);
                     //Turning_particle(conditions.orientation, vec_tmp);
                     tmp_bool = CHECK_CHECK(vec_tmp, taken_voxels);
+	            printVoxels(vec_tmp,tmp_bool,"voxels.txt");
                 } while (tmp_bool = false);
                 //проверяем на пересечения
                 particles.push_back(coord);
