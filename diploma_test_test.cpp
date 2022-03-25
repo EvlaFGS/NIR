@@ -18,6 +18,7 @@ double R;// радиус цилиндра
 double H;//выссота
 const double PI = 3.141592653589793;
 const double VOX_EDGE = 0.5;
+const double MAX_TRIES = 2000;
 
 struct EllipseInitConditions {
     double cube_volume;
@@ -296,8 +297,15 @@ public:
             }
             else
             {
+		int counter=0;
                 do
                 {
+		    counter++;
+		    if (counter>MAX_TRIES)
+	     	    {
+		        cout<<"Algorithm failed to pack particle "<<i<<" in "<<MAX_TRIES<<" attempts. Quiting."<<endl;
+		        exit(1);
+		    }
                     vec_tmp.clear();
                     get_random_coords(coord);
                     Taken_vox_filling(coord, vec_tmp);
@@ -514,8 +522,15 @@ public:
             }
             else
             {
+		int counter=0;
                 do
                 {
+		    counter++;
+		    if (counter>MAX_TRIES)
+	     	    {
+		        cout<<"Algorithm failed to pack particle "<<i<<" in "<<MAX_TRIES<<" attempts. Quiting."<<endl;
+		        exit(1);
+		    }
                     vec_tmp.clear();
      		    get_random_coords(coord);
                     Taken_vox_filling(coord, vec_tmp);
