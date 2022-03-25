@@ -144,6 +144,13 @@ public:
         this->MIN_size = -conditions.cube_edge / 2.0;
     }
 
+    void get_random_coords(Voxel_coordinate &coord)
+    {
+        coord.x = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;//генерация точки центра эллипсоида
+        coord.y = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;
+        coord.z = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;
+    }
+
     void Taken_vox_filling(Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec) {
         omp_set_num_threads(3);
         double x = 0;
@@ -273,18 +280,14 @@ public:
         std::vector<Voxel_coordinate> vec_tmp;
         //taken_voxels.reserve(amount);//делать pushback в цикле 
 
-
         int i = 0;
         bool tmp_bool;
 
         while (i < init_conditions.particle_amount) {
 
-            coord.x = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;//генерация точки центра эллипсоида
-            coord.y = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;
-            coord.z = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;
-
             if (i == 0)
             {
+                get_random_coords(coord);
                 particles.push_back(coord);
                 Taken_vox_filling(coord, taken_voxels);//Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec, double MIN_size, double MAX_size, double A_C, double B
                 //Turning_particle(conditions.orientation, taken_voxels);
@@ -293,9 +296,10 @@ public:
             }
             else
             {
-                vec_tmp.clear();
                 do
                 {
+                    vec_tmp.clear();
+                    get_random_coords(coord);
                     Taken_vox_filling(coord, vec_tmp);
                     //Turning_particle(conditions.orientation, vec_tmp);
                     tmp_bool = CHECK_CHECK(vec_tmp, taken_voxels);
@@ -355,6 +359,13 @@ public:
         this->init_conditions = conditions;
         this->MAX_size = conditions.cube_edge / 2.0;
         this->MIN_size = -conditions.cube_edge / 2.0;
+    }
+
+    void get_random_coords(Voxel_coordinate &coord)
+    {
+        coord.x = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;//генерация точки центра эллипсоида
+        coord.y = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;
+        coord.z = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;
     }
 
     void Taken_vox_filling(Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec) {
@@ -493,12 +504,9 @@ public:
 
         while (i < init_conditions.particle_amount) {
 
-            coord.x = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;//генерация точки центра эллипсоида
-            coord.y = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;
-            coord.z = (double)rand() / (double)RAND_MAX * (MAX_size - MIN_size) + MIN_size;
-
             if (i == 0)
             {
+		get_random_coords(coord);
                 particles.push_back(coord);
                 Taken_vox_filling(coord, taken_voxels);//Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec, double MIN_size, double MAX_size, double A_C, double B
                 //Turning_particle(conditions.orientation, taken_voxels);
@@ -506,9 +514,10 @@ public:
             }
             else
             {
-                vec_tmp.clear();
                 do
                 {
+                    vec_tmp.clear();
+     		    get_random_coords(coord);
                     Taken_vox_filling(coord, vec_tmp);
                     //Turning_particle(conditions.orientation, vec_tmp);
                     tmp_bool = CHECK_CHECK(vec_tmp, taken_voxels);
