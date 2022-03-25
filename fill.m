@@ -11,7 +11,7 @@ prompt = "Enter B in mkm: ";
 B = input(prompt)
 
 ed=18.155/2.0;
-for i=1:1:30
+for i=1:length(A(:,1))
 for x=-ed:0.5:ed
 for y=-ed:0.5:ed
 for z=-ed:0.5:ed
