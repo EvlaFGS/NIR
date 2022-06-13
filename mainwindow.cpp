@@ -24,10 +24,17 @@ QString orientation;
 bool orientation1;
 double MAX_size;
 double MIN_size;
+double Angle_degrees;
+double Angle_radian;
 
 struct Voxel_coordinate//при условии что грань вокселя равна 0.001мкм
 {
     double x, y, z;
+};
+
+struct Rotation_angles//при условии что грань вокселя равна 0.001мкм
+{
+    double alpha, betta, gamma;
 };
 
 double account_for_periodic(double coord, double min, double max)
@@ -67,27 +74,29 @@ float get_random()
     return dis(e);
 }
 
-void Turning_particle(bool orient_a, std::vector<Voxel_coordinate>& vec) {
-    double alpha;
-    double betta;
-    double gamma;
+void Turning_particle(bool orient_a, std::vector<Voxel_coordinate>& vec, std::vector<Rotation_angles>& vec_2) {
+    Rotation_angles angl1;
 
     if (orient_a)//если случайно ориентированные частицы (true)
             {
-        alpha = get_random() * 2 * PI; // любой угл
-        betta = get_random() * 2 * PI;
-        gamma = get_random() * 2 * PI;
+        angl1.alpha = 0; // любой угл
+        angl1.betta = get_random() * 2 * PI;
+        angl1.gamma = get_random() * 2 * PI;
 
-        Coordinate_changin(vec, alpha, betta, gamma);
+        Coordinate_changin(vec, angl1.alpha, angl1.betta, angl1.gamma);
+
+        vec_2.push_back(angl1);
 
     }
     else //если частично случайная ориентирация частиц (false)
     {
-        alpha = get_random() * PI / 6; // от 0 до 30 градусов
-        betta = get_random() * PI / 6;
-        gamma = get_random() * PI / 6;
+        angl1.alpha = 0; // от 0 до N градусов
+        angl1.betta = get_random() * Angle_radian;
+        angl1.gamma = get_random() * Angle_radian;
 
-        Coordinate_changin(vec, alpha, betta, gamma);
+        Coordinate_changin(vec, angl1.alpha, angl1.betta, angl1.gamma);
+
+        vec_2.push_back(angl1);
 
     }
 };
@@ -186,6 +195,10 @@ void generation() {
     std::vector<Voxel_coordinate> particles;
     std::vector<Voxel_coordinate> taken_voxels;
     std::vector<Voxel_coordinate> vec_tmp;
+    std::vector<Rotation_angles> vec_tmp2;
+    std::vector<Rotation_angles> angles_taken_radian;
+    std::vector<Rotation_angles> angles_taken_degrees;
+    Rotation_angles tmp3;
     //taken_voxels.reserve(amount);//делать pushback в цикле
 
     int i = 0;
@@ -209,8 +222,14 @@ void generation() {
             get_random_coords(coord);
             particles.push_back(coord);
 
-            Taken_vox_filling(coord, taken_voxels);//Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec, double MIN_size, double MAX_size, double A_C, double B
-           // Turning_particle(orientation1, taken_voxels);
+            Taken_vox_filling(coord, taken_voxels);
+            if (orientation != "without orientation")
+            {
+                Turning_particle(orientation1, taken_voxels, angles_taken_radian);
+                //angles_taken.push_back(tmp3);
+            }
+
+
             i++;
             //printVoxels(taken_voxels, true, "voxels.txt");
         }
@@ -233,18 +252,21 @@ void generation() {
                 }
                 vec_tmp.clear();
                 get_random_coords(coord);
-                if (type_E_C == "ellipsoids"){
-                    Taken_vox_filling(coord, vec_tmp);
-                    Turning_particle(orientation1, vec_tmp);
-                    tmp_bool = CHECK_CHECK(vec_tmp, taken_voxels);
-     //               printVoxels(vec_tmp, tmp_bool, "voxels.txt");
-                }
-                else{
 
+                Taken_vox_filling(coord, vec_tmp);
+                if (orientation != "without orientation")
+                {
+                    Turning_particle(orientation1, vec_tmp, vec_tmp2);
                 }
+
+                tmp_bool = CHECK_CHECK(vec_tmp, taken_voxels);
+ //             printVoxels(vec_tmp, tmp_bool, "voxels.txt");
+
 
             } while (tmp_bool == false);
             //проверяем на пересечения
+            tmp3 = vec_tmp2.back();
+            angles_taken_radian.push_back(tmp3);
 
             particles.push_back(coord);
             //mark new voxels as taken
@@ -255,7 +277,7 @@ void generation() {
     }
 
 
-   QString mesg="x\t\ty\t\tz\n";
+   QString mesg="x\t\ty\t\tz\n\n";
    if (file.open(QIODevice::WriteOnly | QIODevice::Text)){
         QTextStream out(&file);
         out<<mesg;
@@ -267,8 +289,43 @@ void generation() {
             out << particles[j].z << "\n";
         }
 
+
         file.close();
 
+        angles_taken_degrees.resize(angles_taken_radian.size());;
+
+        int a = 0;
+
+        for(int u = 0; u < angles_taken_radian.size(); u++){
+            angles_taken_degrees[u].alpha = (angles_taken_radian[u].alpha * 180.0) / PI;
+            angles_taken_degrees[u].betta = (angles_taken_radian[u].betta * 180.0) / PI;
+            angles_taken_degrees[u].gamma = (angles_taken_radian[u].gamma * 180.0) / PI;
+        }
+
+        QString filename1 = "angles.txt";
+
+        QFile file2(filename1);
+
+        if(!file2.exists()){
+                qDebug() << "NO existe el archivo "<<filename1;
+            }
+        else{
+                qDebug() << filename1<<" encontrado...";
+            }
+
+        QString mesg2="alpha\t\tbetta\t\tgamma\n\n";
+        if (file2.open(QIODevice::WriteOnly | QIODevice::Text)){
+             QTextStream out(&file2);
+             out<<mesg2;
+
+        for (int k = 0; k < angles_taken_degrees.size(); k++)
+        {
+            out << angles_taken_degrees[k].alpha << "\t";
+            out << angles_taken_degrees[k].betta << "\t\t";
+            out << angles_taken_degrees[k].gamma << "\n";
+        }}
+
+        file2.close();
 
 }
 }
@@ -311,6 +368,11 @@ void MainWindow::on_lineEdit_4_editingFinished()
      percentage = ui->lineEdit_4->text().toDouble();
 }
 
+void MainWindow::on_lineEdit_5_editingFinished()
+{
+    Angle_degrees = ui->lineEdit_5->text().toDouble();
+}
+
 void MainWindow::on_pushButton_clicked()
 {
     double ellipse_volume = (4.0 / 3.0) * PI * A_C_D * A_C_D * B_H;
@@ -323,15 +385,18 @@ void MainWindow::on_pushButton_clicked()
         {
             orientation1 = true;
         }
-        else
+        else if (orientation == "partly random orientation")
         {
             orientation1 = false;
         }
     MAX_size = cube_edge / 2.0;
     MIN_size = -cube_edge / 2.0;
+    Angle_radian = (Angle_degrees * PI) / 180.0;
     generation();
 
 
 }
+
+
 
 
