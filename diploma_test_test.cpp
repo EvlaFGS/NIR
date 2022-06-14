@@ -154,13 +154,13 @@ public:
 
     void Taken_vox_filling(Voxel_coordinate particle, std::vector<Voxel_coordinate>& vec) {
         omp_set_num_threads(3);
-        double x = 0;
-        double y = 0;
-        double z = 0;
+        double x = 0.0;
+        double y = 0.0;
+        double z = 0.0;
 
         Voxel_coordinate part_temp;
 
-        double accur = VOX_EDGE/2.0;
+        //double accur = VOX_EDGE/2.0;
 
 	int count = ceil((MAX_size-MIN_size)/VOX_EDGE);
 	double MAX_corrected = MIN_size + count*VOX_EDGE;
@@ -182,10 +182,13 @@ public:
         for (int i = voxel_min_x; i < voxel_max_x; i++) {
             for (int j = voxel_min_y; j < voxel_max_y; j++) {
                 for (int k = voxel_min_z; k < voxel_max_z; k++) {
+	            x = i*VOX_EDGE + MIN_size;
+		    y = j*VOX_EDGE + MIN_size;
+		    z = k*VOX_EDGE + MIN_size;
+		     if (pow((x - particle.x), 2) / pow(A_C, 2) + pow((y - particle.y), 2) / pow(B, 2) + pow((z - particle.z), 2) / pow(A_C, 2) - 1 <= 0) {
 	     	    x = account_for_periodic(i*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
 		    y = account_for_periodic(j*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
 		    z = account_for_periodic(k*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
-		     if (fabs(((pow((x - particle.x), 2) / pow(A_C, 2)) + (pow((y - particle.y), 2) / pow(B, 2)) + (pow((z - particle.z), 2) / pow(A_C, 2))) - 1) < accur) {
                         part_temp.x = x;
                         part_temp.y = y;
                         part_temp.z = z;
@@ -200,7 +203,7 @@ public:
     void Coordinate_changin(std::vector<Voxel_coordinate>& vec, double phi, double theta, double psi) {
         Voxel_coordinate tmp;
 
-        double turnin_matrix_R[3][3] = { // матрица R = Rz(gamma) * Rx(betta) * Rz(alpha)
+        double turnin_matrix_R[3][3] = { // матрица R = Rz(psi) * Ry(theta) * Rx(phi)
                {(cos(theta) * cos(psi)), ((-cos(phi) * sin(psi)) + (sin(phi) * sin(theta) * cos(psi))), ((sin(phi) * sin(psi)) + (cos(phi) * sin(theta) * cos(psi)))},
                {(cos(theta) * sin(psi)), ((cos(phi) * cos(psi)) + (sin(phi) * sin(theta) * sin(psi))), ((-sin(phi) * cos(psi)) + (cos(phi) * sin(theta) * sin(psi)))},
                {(-sin(theta)), (sin(phi) * cos(theta)), (cos(phi) * cos(theta))}
@@ -221,7 +224,7 @@ public:
     float get_random()
     {
         static std::default_random_engine e;
-        static std::uniform_real_distribution<> dis(0, 1); // rage 0 - 1
+        static std::uniform_real_distribution<> dis(0.0, 1.0); // range 0 - 1
         return dis(e);
     }
 
@@ -232,14 +235,14 @@ public:
 
         if (orient_a)//если случайно ориентированные частицы (true)
         {
-            alpha = get_random() * 2 * PI; // любой угл
+            alpha = get_random() * 2 * PI; // любой угол
             betta = get_random() * 2 * PI;
             gamma = get_random() * 2 * PI;
 
             Coordinate_changin(vec, alpha, betta, gamma);
 
         }
-        else //если частично случайная ориентирация частиц (false)
+        else //если частично случайная ориентация частиц (false)
         {
             alpha = get_random() * PI / 6; // от 0 до 30 градусов 
             betta = get_random() * PI / 6;
@@ -269,7 +272,7 @@ public:
 	    break;
 
         }
-        return(check);
+        return check;
     };
 
     void generation() {
@@ -406,10 +409,13 @@ public:
         for (int i = voxel_min_x; i < voxel_max_x; i++) {
             for (int j = voxel_min_y; j < voxel_max_y; j++) {
                 for (int k = voxel_min_z; k < voxel_max_z; k++) {
+	            x = i*VOX_EDGE + MIN_size;
+		    y = j*VOX_EDGE + MIN_size;
+		    z = k*VOX_EDGE + MIN_size;
+                    if ( (pow((x - particle.x), 2) / pow(R, 2) + pow((y - particle.y), 2) / pow(R, 2) - 1 <= 0) && (fabs(z - particle.z) <= H / 2.0 + accur) ) {
 	            x = account_for_periodic(i*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
 		    y = account_for_periodic(j*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
 		    z = account_for_periodic(k*VOX_EDGE + MIN_size, MIN_size, MAX_corrected);
-                    if ((fabs(((pow((x - particle.x), 2) / pow(R, 2)) + (pow((y - particle.y), 2) / pow(R, 2))) - 1) < accur) && (((-H / 2) - accur <= particle.z) || (particle.z <= (H / 2) + accur))) {
                         part_temp.x = x;
                         part_temp.y = y;
                         part_temp.z = z;

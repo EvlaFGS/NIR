@@ -1,3 +1,14 @@
+1;
+
+function t = account_for_periodic (x,ed)
+t=x;
+if (x<-ed)
+t=x+2*ed;
+elseif (x>ed)
+t=x-2*ed;
+endif
+end
+
 xx=[];
 yy=[];
 zz=[];
@@ -9,13 +20,18 @@ prompt = "Enter A_C in mkm: ";
 A_C = input(prompt)
 prompt = "Enter B in mkm: ";
 B = input(prompt)
+prompt = "Enter edge of a cube: ";
+EDGE=input(prompt)
 
-ed=18.155/2.0;
+ed=EDGE/2.0;
 for i=1:length(A(:,1))
-for x=-ed:0.5:ed
-for y=-ed:0.5:ed
-for z=-ed:0.5:ed
-if ((x-A(i,1)).^2/(A_C.^2)+(y-A(i,2)).^2/(B.^2)+(z-A(i,3)).^2/(A_C.^2)<1.0)
+for x=-ed-B:0.5:ed+B
+for y=-ed-B:0.5:ed+B
+for z=-ed-B:0.5:ed+B
+if ((x-A(i,1)).^2/(A_C.^2)+(y-A(i,2)).^2/(B.^2)+(z-A(i,3)).^2/(A_C.^2)<=1.0)
+x=account_for_periodic(x,ed);
+y=account_for_periodic(y,ed);
+z=account_for_periodic(z,ed);
 xx=[xx x];
 yy=[yy y];
 zz=[zz z];
