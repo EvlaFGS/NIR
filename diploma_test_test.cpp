@@ -160,11 +160,11 @@ public:
 
         Voxel_coordinate part_temp;
 
-        //double accur = VOX_EDGE/2.0;
+        double accur = VOX_EDGE/2.0;
 
 	int count = ceil((MAX_size-MIN_size)/VOX_EDGE);
 	double MAX_corrected = MIN_size + count*VOX_EDGE;
-	double large_ax=A_C>B?A_C:B;
+	double large_ax=A_C>B?A_C:B + accur;
 	double min_x = particle.x - large_ax;
 	double max_x = particle.x + large_ax;
 	double min_y = particle.y - large_ax;
@@ -391,7 +391,7 @@ public:
 
 	int count = ceil((MAX_size-MIN_size)/VOX_EDGE);
 	double MAX_corrected = MIN_size + count*VOX_EDGE;
-	double large_ax=sqrt(H*H/4.0 + R*R);
+	double large_ax=sqrt(H*H/4.0 + R*R) + accur;
 	double min_x = particle.x - large_ax;
 	double max_x = particle.x + large_ax;
 	double min_y = particle.y - large_ax;
